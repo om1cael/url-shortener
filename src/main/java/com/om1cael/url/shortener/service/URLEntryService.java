@@ -17,7 +17,7 @@ public class URLEntryService {
 
     public URLEntryDTO createShortURL(URLEntryDTO urlEntryDTO) throws AlreadyShortenedException {
         if(urlAlreadyShortened(urlEntryDTO)) {
-            throw new AlreadyShortenedException("URL already shortened!");
+            throw new AlreadyShortenedException("URL already shortened");
         }
 
         URLUtils urlUtils = new URLUtils(urlEntryDTO.URL());
