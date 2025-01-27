@@ -21,5 +21,6 @@ public class URLEntry {
     @NotNull
     private String shortURL;
 
+    @NotNull
     private int clicks;
 }
