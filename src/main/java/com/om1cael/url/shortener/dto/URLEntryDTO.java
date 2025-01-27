@@ -6,6 +6,6 @@ import jakarta.validation.constraints.NotNull;
 public record URLEntryDTO
     (
         @NotNull String URL,
-        @JsonProperty(access = JsonProperty.Access.READ_ONLY) String shortURL
+        @JsonProperty(access = JsonProperty.Access.READ_ONLY) String shortCode
     )
 {}

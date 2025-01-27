@@ -19,7 +19,7 @@ public class URLEntry {
     private String URL;
 
     @NotNull
-    private String shortURL;
+    private String shortCode;
 
     @NotNull
     private int clicks;
