@@ -2,6 +2,7 @@ package com.om1cael.url.shortener.controller;
 
 import com.om1cael.url.shortener.dto.URLEntryDTO;
 import com.om1cael.url.shortener.exception.AlreadyShortenedException;
+import com.om1cael.url.shortener.model.URLEntry;
 import com.om1cael.url.shortener.service.URLEntryService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,9 +28,11 @@ public class URLEntryController {
 
     @GetMapping("/{shortCode}")
     private ResponseEntity<Void> accessURL(@PathVariable String shortCode) {
-        String URL = this.urlEntryService.getByShortCode(shortCode).getURL();
+        URLEntry urlEntry = this.urlEntryService.getByShortCode(shortCode);
+        this.urlEntryService.incrementClicksAndSave(urlEntry);
+
         return ResponseEntity.status(HttpStatus.FOUND)
-                .location(URI.create(URL))
+                .location(URI.create(urlEntry.getURL()))
                 .build();
     }
 }

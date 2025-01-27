@@ -41,6 +41,17 @@ public class URLEntryService {
         this.urlEntryRepository.save(urlEntry);
     }
 
+    public void incrementClicksAndSave(URLEntry urlEntry) {
+        URLEntry updatedURLEntry = new URLEntry();
+
+        updatedURLEntry.setId(urlEntry.getId());
+        updatedURLEntry.setURL(urlEntry.getURL());
+        updatedURLEntry.setShortCode(urlEntry.getShortCode());
+        updatedURLEntry.setClicks(urlEntry.getClicks() + 1);
+
+        this.urlEntryRepository.save(updatedURLEntry);
+    }
+
     private boolean urlAlreadyShortened(URLEntryDTO urlEntryDTO) {
         return this.urlEntryRepository.findByURL(urlEntryDTO.URL()).isPresent();
     }
