@@ -4,6 +4,7 @@ import com.om1cael.url.shortener.dto.URLEntryDTO;
 import com.om1cael.url.shortener.exception.AlreadyShortenedException;
 import com.om1cael.url.shortener.model.URLEntry;
 import com.om1cael.url.shortener.service.URLEntryService;
+import com.om1cael.url.shortener.utils.RateLimiter;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,20 +20,31 @@ public class URLEntryController {
     @Autowired
     private URLEntryService urlEntryService;
 
+    @Autowired
+    private RateLimiter rateLimiter;
+
     @PostMapping
     private ResponseEntity<URLEntryDTO> createShortURL(@RequestBody @Valid URLEntryDTO urlEntryDTO) throws AlreadyShortenedException {
-        URLEntryDTO responseURLEntryDTO = this.urlEntryService.createShortURL(urlEntryDTO);
-        this.urlEntryService.save(responseURLEntryDTO);
-        return ResponseEntity.ok(responseURLEntryDTO);
+        if(this.rateLimiter.tryConsume()) {
+            URLEntryDTO responseURLEntryDTO = this.urlEntryService.createShortURL(urlEntryDTO);
+            this.urlEntryService.save(responseURLEntryDTO);
+            return ResponseEntity.ok(responseURLEntryDTO);
+        }
+
+        return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS).build();
     }
 
     @GetMapping("/{shortCode}")
     private ResponseEntity<Void> accessURL(@PathVariable String shortCode) {
-        URLEntry urlEntry = this.urlEntryService.getByShortCode(shortCode);
-        this.urlEntryService.incrementClicksAndSave(urlEntry);
+        if(this.rateLimiter.tryConsume()) {
+            URLEntry urlEntry = this.urlEntryService.getByShortCode(shortCode);
+            this.urlEntryService.incrementClicksAndSave(urlEntry);
 
-        return ResponseEntity.status(HttpStatus.FOUND)
-                .location(URI.create(urlEntry.getURL()))
-                .build();
+            return ResponseEntity.status(HttpStatus.FOUND)
+                    .location(URI.create(urlEntry.getURL()))
+                    .build();
+        }
+
+        return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS).build();
     }
 }
