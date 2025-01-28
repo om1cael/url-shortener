@@ -5,7 +5,7 @@ import jakarta.validation.constraints.NotNull;
 
 public record URLEntryDTO
     (
-        @NotNull String URL,
+        @NotNull @org.hibernate.validator.constraints.URL String URL,
         @JsonProperty(access = JsonProperty.Access.READ_ONLY) String shortCode
     )
 {}
